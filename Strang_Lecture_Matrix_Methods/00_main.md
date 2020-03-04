@@ -108,3 +108,31 @@ The null space is orthogonal to the associated row or column space.
    A sum of rank $1$ matrices: $S = (Q\Lambda)Q^T = \sum_{i=1}^n \lambda_i q_i q_i^T$
 4. $A = X\Lambda X^{-1}$ 
 5. $A = U\Sigma V^T$: singular value decomposition
+
+# Lecture 3
+
+Properties of orthogonal matrices, usually named $Q$:
+
+- it's columns are orthogonal
+- columns are unit vectors
+- $Q^TQ = I$
+- $QQ^T = I$ if $Q$ is square.
+- $||Qx|| = ||x||$ (because $||Qx||^2 = (Qx)^T(Qx) = x^TQ^TQ^x = x^Tx = ||x||^2$)
+
+## Interesting orthogonal matrices
+
+1. Rotation matrix: $Q = \begin{bmatrix}\cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}$
+
+1. Reflection at $\theta/2$ matrix: $Q = \begin{bmatrix}\cos\theta & \sin\theta \\ \sin\theta & -\cos\theta \end{bmatrix}$ 
+
+1. Householder reflections: $H = I - 2uu^T$ for a _unit vector_ $u$.
+   - $H$ is symmetric, so $H^TH = HH$
+   - to proof orthonormality, show $H^TH = I$:
+
+     $H^TH = HH = I - 4uu^T + 4uu^Tuu^T = I$ (because $u^Tu = 1$, unit vector)
+1. Hadamard matrices: $H_2 = \begin{bmatrix}1 & 1 \\ 1 & -1 \end{bmatrix}$
+   - this extends to $H_4, H_8, H_{12}$ via some kind of recursion scheme
+   - $H_4 = \begin{bmatrix}H_2 & H_2 \\ H_2 & -H_2\end{bmatrix}$
+   - $H_8 = \begin{bmatrix}H_4 & H_4 \\ H_4 & -H_4\end{bmatrix}$
+1. Wavelets
+1. Eigenvectors of symmetric $S$ or orthogonal $Q$ are orthogonal
