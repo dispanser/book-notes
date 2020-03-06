@@ -136,3 +136,55 @@ Properties of orthogonal matrices, usually named $Q$:
    - $H_8 = \begin{bmatrix}H_4 & H_4 \\ H_4 & -H_4\end{bmatrix}$
 1. Wavelets
 1. Eigenvectors of symmetric $S$ or orthogonal $Q$ are orthogonal
+
+## Lecture 4: Eigenvectors and Eigenvalues
+
+### Eigenvectors: Introduction
+
+$Ax = \lambda x$. $x$ is an eigenvector of $A$, $\lambda$ is an eigenvalue of $A$.
+Eigenvectors keep their direction unchanged when linear
+transformation $A$ is applied to them.
+
+- there are up to $n$ independent eigenvectors for $A \in \mathbb{R}^{n \times n}$
+- $A^2x = A(Ax) = A\lambda x = \lambda Ax = \lambda^2 x$
+- $A^{-1} x = \frac{1}{\lambda}x$. This does not work when $A$ is not invertible.
+- $e^{At}x = e^{\lambda t}x$
+- Let $v = \sum c_i x_i$. Then $A^k v = \sum c_i \lambda_i^k x_i$.
+  Rotation in the basis of eigenvectors is extremely convenient and cheap
+
+### Matrix Similarity
+
+$B$ is similar to $A$ if $B = M^{-1}AM$.
+
+-  Similar matrices have the same eigenvalues: Let $x$ be an eigenvector of
+   $B$. Then $Bx = M^{-1}AMx = \lambda x \Rightarrow MBx = MM^{-1}AMx = AMx = \lambda Mx$.
+   $Mx$ is an eigenvector of $A$.
+- $AB$ has same eigenvalues as $BA$: $AB = A^{-1}ABA = BA$, so they are similar
+  and have the same eigenvalues.
+- $A = X\Lambda X^{-1}$ where $X$ is the matrix of eigenvectors of $A$
+  - $A$ is similar to $\Lambda$
+
+### Finding Eigenvalues
+
+Let $A = \begin{bmatrix} 0 & 1 \\ -1 & 0\end{bmatrix}$
+
+Looking for: $Ax = \lambda x$... $(A - \lambda I)x = 0 \Rightarrow det(A-\lambda I) = 0)$
+
+$det(A - \lambda I) = det\left(\begin{bmatrix}-\lambda & 1 \\ -1 &-\lambda \end{bmatrix}\right) = \lambda^2 + 1 = 0
+\Rightarrow \lambda_1 = i, \lambda_2 = -i$
+
+You can verify with the following rules:
+
+- $trace(A) = \sum \lambda_i$
+- $det(A) = \prod \lambda_i$
+
+### Symmetric Matrices
+
+- eigenvalues of $S$ are real
+- eigenvectors of $S$ are orthogonal
+- all $n$ eigenvectors exist (some may be repeated)
+- $S\begin{bmatrix}x_1 & x_2\end{bmatrix} = \begin{bmatrix}x_1 & x_2\end{bmatrix} \Lambda$ 
+  is a diagonalization of $S$ 
+  - based on the eigenvectors $x_1, x_2$
+  - $S = Q\Lambda Q^T$ is the symmetric version of $A = X\Lambda X^{-1}$
+  - spectral theorem
