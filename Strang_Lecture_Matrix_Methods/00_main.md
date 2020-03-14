@@ -188,3 +188,74 @@ You can verify with the following rules:
   - based on the eigenvectors $x_1, x_2$
   - $S = Q\Lambda Q^T$ is the symmetric version of $A = X\Lambda X^{-1}$
   - spectral theorem
+
+# Lecture 5 - Positive Definite Matrices
+
+A matrix $S$ is positive-definite iff and only if:
+
+1. All $\lambda_i > 0$
+2. $x^TSx > 0$ when $x > 0$: the _energy_ of $S$
+3. $S = A^TA$
+4. All leading determinants $> 0$
+   - _leading determinants_ are the determinants of all upper-left square matrices
+5. All pivots in elimination $> 0$
+
+Surprisingly enough, these five things are equivalent.
+
+# Lecture 6 - Singular Value Decomposition
+
+Moving from square, symmetric matrices and _spectral decomposition_ to
+rectangular matrices, where the concept of eigenvalues can not exist due to
+dimensionality mismatch.
+
+Without further ado, singular value decomposition for $A \in \mathbb{R}^{m \times n}$: $A = U\Sigma V^T$
+
+- $U \in \mathbb{R}^{m \times m}$ is a _unitary matrix_ containing the left-singular vectors
+- $V \in \mathbb{R}^{n \times n}$ is a _unitary matrix_ containing the right-singular vectors
+- $\Sigma \in \mathbb{R}^{m \times n}$ is a _diagonal matrix_ containing the singular values
+
+Basic idea: take $A^TA = V\Lambda V^T \in \mathbb{R}^{m \times m}$. This is a
+symmetric, positive-definite matrix. Accordingly, $V$ is orthogonal and the
+eigenvalues on the diagonal of $\Lambda$ are all positive. Similarly, consider
+$AA^T = U\Lambda U^T \in \mathbb{R}^{n \times n}$ with the _same eigenvalues_
+for all non-zero elements (the larger of the two matrices will have zeros
+on the additional diagonal elements).
+
+Another view on $A = U\Sigma V^T$ is that we're looking for $Av_i = \sigma_i
+u_i$. In other words, we are trying to find _orthogonal_ vectors $v_i$
+that are transformed into another set of orthogonal vectors $u_i$: $AV = U\Sigma$.
+
+To find these vectors:
+
+- we know that the _eigendecomposition_ of $A^TA = V\Lambda V^T$ produces
+  orthonormal $V$ and a positive diagonal $\Lambda$
+- $A^TA = (U\Sigma V^T)^TU\Sigma V^T = V\Sigma^TU^TU\Sigma V^T = V \Sigma^T \Sigma V^T 
+  \Rightarrow V$ is orthogonal
+- let $u_i = \frac{Av_i \sigma_i}{\sigma_i}$:
+
+  We show that $u_j^Tu_i$ is orthonormal:
+
+  $u_j^Tu_i = \frac{(Av_j)}{\sigma_j}^T\frac{(Av_i)}{\sigma_i} = \frac{v_jA^TAv_i}{\sigma_i\sigma_j}
+    = \frac{v_j\sigma_i^2vi_i}{\sigma_i\sigma_j} = \frac{\sigma_iv_jvi_i}{\sigma_j}
+    = v_j^Tv_j$. $v_j^Tv_i = 0$ for $j \neq i$. $v_j^Tv_i = 1$ for $j = i$, so $U$ is orthogonal.
+
+  Left to show that $u_i$ are eigenvectors of $AA^T$:
+
+  $AA^T u_i
+  = AA^T\frac{Av_i}{\sigma_i}
+  = A\frac{A^TAv_i}{\sigma_i}
+  = \frac{\sigma_i^2Av_i}{\sigma_i}
+  = \sigma_i^2\frac{Av_i}{\sigma_i}
+  = \sigma_i^2u_i$
+
+- $\Sigma = \Lambda^T \Lambda$ (less the shape differences)
+
+## Geometric interpretation
+
+The three parts of a SVD can be interpreted as a three consecutive linar transformations:
+
+- $V^Tx$: rotation (isometric)
+- $\Sigma (V^Tx)$: stretching $V^Tx$ to an ellipse
+- $U (\Sigma V^Tx)$: another rotation
+
+
