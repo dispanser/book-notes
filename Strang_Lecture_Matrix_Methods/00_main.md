@@ -259,3 +259,80 @@ The three parts of a SVD can be interpreted as a three consecutive linar transfo
 - $U (\Sigma V^Tx)$: another rotation
 
 
+# Lecture 7 - Eckart-Young Theorem / PCA
+
+## Eckart-Young: Approximating a Matrix with rank $k$
+
+Let $A = U\Sigma V^T= \Sigma_{i=1}^r\sigma_i u_i v_i^T$, $r = rk(A)$.
+
+Then $A_K = U\Sigma V^T= \Sigma_{i=1}^K\sigma_i u_i v_i^T$ is the rank-$k$
+matrix that minimizes $||A - B||$ for any rank-$k$ matrix $B$.
+
+In other words, the first $k$ singular values and vectors provide the best possible
+approximation for $A$.
+
+## Norms
+
+Properties of norms:
+
+- $||cv|| = |c|||v||$
+- $||v + w|| \leq ||v|| + ||w||$
+- $||v|| \geq 0$
+- $||Qv|| = ||v||$ (because a rotation is isometric in euclidian space)
+
+### Vector Norms
+
+\begin{align}
+	||v||_1 &= |v_1| + \dots + |v_n| \\
+	||v||_2 &= \sqrt{|v_1|^2 + \dots + |v_n|^2} \\
+	||v||_p &= \sqrt[^p]{|v_1|^p + \dots + |v_n|^p} \\
+	||v||_{\infty} &= max|v_i|
+\end{align}
+
+Note that $\lim_{p \to \infty} ||v||_p = ||v||_{\infty}$ because the largest
+vector component dominates the sum.
+
+### Matrix Norms
+
+\begin{align*}
+	||A||_2 &= \sigma_1 \\
+	||A||_F &= \sqrt{|a_{11}|^2 + \dots + |a_{mn}|^2} = \sqrt{|\sigma_1|^2 + \dots + |\sigma_r|^2}\\
+	||A||_{\text{nuclear}} &= \Sigma_i\sigma_i
+\end{align*}
+
+While not really mentioned explicitly in the lecture, the singular value
+decomposition leads to a series of $A_k$, where $A_k$ contains the the first
+$k$ principal components $\sigma_i u_i v_i^T$.
+
+# Lecture 8 - Vector and Matrix Norms
+
+## Vector Norms
+
+$||v||_0 = \text{number of non-zero components}$. But that's not a norm,
+because it violates some of the norm properties above.
+
+Visualizing norms: plot all $||v|| = 1, v \in \mathbb{R}^2$.
+
+- $l_1$: diamond shape centered at the origin
+- $l_2$: circle centered at the origin
+- $l_\infty$: square centered at the origin
+- $l_0$: the entire x and y axis themselves, without the origin.
+
+Norms should be convex, and any norm $l_p$ with $p < 1$ need not apply.
+
+$||v||_S = \sqrt{x^T S x}$ for a symmetric, positive definite matrix $S$.
+
+We discuss how the $l_1$ norm produces a sparse result, whereas $l_2$
+doesn't by solving a constraint system $min||x||_p$ where $Ax = b$.
+
+## Matrix Norms
+
+Deriving $||A||_2$ in terms of the vector norm for $x$: 
+$$||A||_2 = \max_{\forall x}\frac{||Ax||_2}{||x||_2}$$
+
+The vector that maximizes this is $v_1$, the first singular vector (why?).
+$\frac{||Av_1||_2}{||v||_2} = ||Av_1||_2 = ||\sigma_1 u_1||_2 = \sigma_1$.
+
+Multiplying with an orthogonal matrix does not change the norm (for the norms
+discussed here, at least).
+
