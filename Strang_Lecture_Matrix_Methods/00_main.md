@@ -336,3 +336,142 @@ $\frac{||Av_1||_2}{||v||_2} = ||Av_1||_2 = ||\sigma_1 u_1||_2 = \sigma_1$.
 Multiplying with an orthogonal matrix does not change the norm (for the norms
 discussed here, at least).
 
+# Lecture 9 - 11: Different ways to solving Least Squares
+
+## Pseudoinverse $A^+$
+
+- $A^+ = A^{-1}$ when A is invertible
+- otherwise, it's the best possible approximation to what an inverse would do
+- $A^+Ax = x$ when $Ax \neq 0$: normal inverse behavior for $C(A)$
+- $A^+Ax = 0$ when $Ax = 0$: can't recover the information for $N(A)$
+- $A^+v_{r+1} = 0$ when $v_{r+1} \in N(A^T)$
+  - $r$ is the rank, so $v_{r+1}$ is the first singular vector that's not reachable via $A$.
+
+\begin{align}
+	A^{-1} &=  V\Sigma^{-1}U^T & \text{if $A$ is invertible}\\
+	A^+ &=  V\Sigma^+U^T & \text{for all $A$}
+\end{align}
+
+- $\Sigma^{-1}$ is a square diagonal matrix, without zero elements on the diagonal
+  - the diagonal elements are $\frac{1}{\sigma_{ii}}$
+- $\Sigma^+$ has rank $r$, and $\frac{1}{\sigma_{ii}}$ for the _non-zero_ diagonal elements
+
+## Solve $A^TA\hat{x} = A^Tb$
+
+There's a solution to $Ax = b$ if and only if all $b$s lie on the same n-dimensional
+hyperplane ($A \in \mathbb{R}^{m \times n}$. If that's not the case, we can only
+approximately solve it, using least squares (linear regression): 
+
+$$minimize||Ax - b||^2_2 = (Ax-b)^T(Ax-b) = x^TA^TAx - 2b^TAx + b^Tb$$.
+
+The derivative of that leads to: $$A^TA\hat{x} = A^Tb$$
+
+Geometrically, $A\hat{x}$ will be the projection of $b$ onto the column space
+$C(A)$, the nearest point to $b$ that can be represented using some $Ax$.
+
+This works well assuming $A$ has independent columns, as only then $A^TA$
+is invertible.
+
+Claim: When $N(A) = 0, rk(A) = n$, then $A^+b = (A^TA)^{-1}A^Tb$.
+
+Using SVD, we get: \begin{align}(A^TA)^{-1}A^T &= ((V\Sigma^T U^T)(U\Sigma V^T))^{-1}(V\Sigma^TU^T) \\
+	&= ((V\Sigma^T\Sigma V^T))^{-1}(V\Sigma^TU^T) \\
+	&= (V(\Sigma^T\Sigma)^{-1} V^T)(V\Sigma^TU^T) \\
+    &= (V(\Sigma^T\Sigma)^{-1}\Sigma^TU^T)
+\end{align}
+
+## Orthogonalize first
+
+This is just a minor modification of the previous approach: when the input
+columns are nearly singular (almost the same direction), pre-process using
+Gram-Schmidt to have a numerically saner process.
+
+One improvement to the regular Gram-Schmidt is to reorder the columns in a way
+that picks the numerically largest orthogonal vector first.
+
+
+## Regularization: $(A^TA + \delta^2I)x = A^Tb$
+
+Consider a near-singular $A = U \Sigma V^T$. Then $A^{-1} = V \Sigma^{-1} U^T$
+becomes very large because $\Sigma^{-1}$ contains the reciprocal values of the
+very small singular values in $A$.
+
+This can lead to numerically unstable computations, where a small deviation in
+$A$ changes $x$ considerably.
+
+In such a case, adding a penalty term, e.g. $\delta^2 ||x||^2$ reduces the
+magnitude of $x$, leading to a well-conditioned problem. The problem that is
+now being solved is
+
+$$
+\begin{bmatrix}
+	A \\ \delta I
+\end{bmatrix}x =
+\begin{bmatrix}
+	b \\ 0
+\end{bmatrix}
+$$
+
+This augmented system $A^*x = b^*$ will solve $min(||Ax - b||^2 + \delta^2||x^2_2)$.
+The normal equation leads to $A^TA + \delta^2I)x_\delta = A^Tb$.
+
+What happens for $\delta \to 0$? For any $A$, $A^TA + \delta^2I)^{-1}A^T \to A^+$
+Checked in the lecture for $1 \times 1$.
+
+The regularization above is known as _ridge regression_. Using the $l_1$-Norm,
+the solution gives sparse solution (variable selection) and is called
+_the lasso_.
+
+
+
+## Gram-Schmidt
+
+Let $A = [a_1 a_2 \dots a_n]$ where the columns $a_i$ are _barely_ independent,
+i.e. they are almost dependent. Geometrically, the lines drawn from the columns
+would be almost parallel. The goal is to represent $A = QR$, i.e. by
+a _orthogonal_ $Q$ and a linear combinations of the columns of $Q$, $R = Q^TA$.
+
+Basic idea: iteratively work through the columns, for each column removing the
+parts of the vector that go into the direction of the previous columns (by
+computing projections). The result is a vector that is perpendicular to all
+previously computed columns. Finally, we make it a unit vector by dividing by
+its norm.
+
+\begin{align}
+	q_1 &= \frac{a_1}{||a_1||} \\
+	A_2 &= a_2 - (q_1^Ta_2)q_1 \\
+	q_2 &= \frac{A_2}{||A_2||} \\
+	\vdots \\
+	A_i &= a_i - \sum_{j=1}^{i-1}(q_j^Ta_i)q_j \\
+	q_i &= \frac{A_i}{||A_i||}
+\end{align}
+
+### Improving Numerical Robustness
+
+When $a_1$ and $a_2$ are almost in the same direction, the above calculation
+produces a very small residual vector $A_2$, which is then scaled up to unit
+length. 
+
+Instead of using $A_2$, we could find the largest possible $A_i$ from all
+remaining columns, swap columns and proceed. To not take a performance hit by
+having to recompute all the intermediate values, we can proceed in a different
+order:
+
+- compute $q_i$, starting at $i = 1$.
+- next compute $A_j' = A_j - (q_i^TA_j)q_i$ for $j = i+1 \dots n$
+  - subtract $q_i$ from all remaining columns
+- find the largest $A_j'$ and produce $q_{i+}$ via column exchange
+
+This changes the order from computing $A_i$ in one go into incrementally
+adapting $A_j$ with each new $q_i$ that is finalized.
+
+## Krylov Spaces
+
+Solving $Ax = b$, for a large, sparse $A$. Idea: take a vector $b$ and compute
+$Ab, A(Ab), A(A(Ab)), \dots, A^{j-1}b$. These vectors span a space called a
+_Krylov Space_ $K_j$. We compute $x_j$ as the best vector in $K_j$ that
+is hopefully close to the real solution $x$.
+
+The base of $K_j$ may not be very good, so it seems to be a good a idea to
+apply Gram-Schmidt to orthonormalize the basis.
+
